@@ -95,6 +95,18 @@ async function run() {
          }
       })
 
+      app.get('/campaigns/limit/:count', async (req, res) => {
+         const count = parseInt(req.params.count);
+         const data = await campaignCollection.find().toArray();
+         const result = data.filter(item => {
+            const date1 = new Date();
+            const date2 = new Date(item.deadline);
+            return date1 <= date2;
+         });
+
+         res.send(result.slice(0, count));
+      });
+
       // get a particular campaign data using id
       app.get('/campaigns/:id', async (req, res) => {
          const id = req.params.id;
