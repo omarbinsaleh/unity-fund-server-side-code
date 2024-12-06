@@ -43,7 +43,11 @@ async function run() {
          res.send(result);
       })
 
-      // 
+      // get all users:
+      app.get('/users', async (req, res) => {
+         const result = await userCollection.find().toArray() || [];
+         res.send(result);
+      })
       
       // add new campaign 
       app.post('/campaigns/create', async (req, res) => {
