@@ -117,6 +117,14 @@ async function run() {
          res.send(campaign);
       })
 
+      // delete a campaign:
+      app.delete('/campaigns/:id', async(req, res) => {
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)};
+         const result = await campaignCollection.deleteOne(query);
+         res.send(result);
+      })
+
       // add donation to the database
       app.post('/donations', async(req, res) => {
          const donation = req.body;
