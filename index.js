@@ -124,6 +124,18 @@ async function run() {
          res.send(result);
       })
 
+      app.get('/donations', async(req, res) => {
+         const data = await donatedCollection.find().toArray();
+         res.send(data);
+      })
+
+      app.get('donations/:id', async(req, res) => {
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)};
+         const donation = await donatedCollection.findOne(query);
+         res.send(donation);
+      })
+
 
 
       // Send a ping to confirm a successful connection
