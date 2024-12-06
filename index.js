@@ -30,6 +30,7 @@ async function run() {
       const db = client.db("unityFundDB");
       const campaignCollection = db.collection("allCampaigns"); // all campaigns collection
       const userCollection = db.collection('users'); // all existing user collection
+      const donatedCollection = db.collection('donatedCollection') // all donated money collection:
 
       // The default home route:
       app.get('/', (req, res) => {
@@ -95,6 +96,7 @@ async function run() {
          }
       })
 
+      // get a variable number of active campaigns:
       app.get('/campaigns/limit/:count', async (req, res) => {
          const count = parseInt(req.params.count);
          const data = await campaignCollection.find().toArray();
@@ -114,6 +116,15 @@ async function run() {
          const campaign = await campaignCollection.findOne(query);
          res.send(campaign);
       })
+
+      // add donation to the database
+      app.post('/donations', async(req, res) => {
+         const donation = req.body;
+         const result = await donatedCollection.insertOne(donation);
+         res.send(result);
+      })
+
+
 
       // Send a ping to confirm a successful connection
       //  await client.db("admin").command({ ping: 1 });
