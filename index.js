@@ -36,18 +36,27 @@ async function run() {
          res.send("Unity Fund server is connected to mongoDB....")
       })
 
+      // add new user
+      app.post('/users/create', async(req, res) => {
+         const newUser = req.body;
+         const result = await userCollection.insertOne(newUser);
+         res.send(result);
+      })
+
+      // 
+      
+      // add new campaign 
+      app.post('/campaigns/create', async (req, res) => {
+         const newCampaign = req.body;
+         const result = await campaignCollection.insertOne(newCampaign);
+         res.send(result);
+      })
+      
       // get all the avaiable campaigns:
       app.get('/campaigns', async (req, res) => {
          const cursor = campaignCollection.find();
          const allCampaigns = await cursor.toArray() || [];
          res.send(allCampaigns);
-      })
-
-      // add new campaign 
-      app.post('/campaigns/add', async (req, res) => {
-         const campaign = req.body;
-         const result = await campaignCollection.insertOne(campaign);
-         res.send(result);
       })
 
       // Send a ping to confirm a successful connection
