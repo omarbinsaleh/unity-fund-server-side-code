@@ -117,6 +117,21 @@ async function run() {
          res.send(campaign);
       })
 
+      // update campaign:
+      app.put('campaigns/update/:id', async(req, res) => {
+         const data = req.body;
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)};
+         const option = { upsert: true};
+         const updateDoc = {
+            $set : {
+               ...data, lastModified: new Date().toLocaleString()
+            }
+         };
+         const result = await campaignCollection.updateOne(query, updateDoc, option);
+         res.send(result);
+      })
+
       // delete a campaign:
       app.delete('/campaigns/:id', async(req, res) => {
          const id = req.params.id;
