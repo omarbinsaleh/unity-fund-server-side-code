@@ -37,7 +37,7 @@ async function run() {
       })
 
       // add new user
-      app.post('/users/create', async(req, res) => {
+      app.post('/users/create', async (req, res) => {
          const newUser = req.body;
          const result = await userCollection.insertOne(newUser);
          res.send(result);
@@ -45,37 +45,61 @@ async function run() {
 
       // get all users:
       app.get('/users', async (req, res) => {
-         const users = await userCollection.find().toArray() || [];
-         res.send(users);
+         if (req.body && req.body._id) {
+            // filter users based on
+            const query = {...req.body, _id: new ObjectId(req.body._id)};
+            const data = await userCollection.find(query).toArray();
+            res.send(data);
+         }
+         else if (req.body) {
+            const query = req.body;
+            const data = await userCollection.find(query).toArray();
+            res.send(data);
+         }
+         else {
+            const data = await userCollection.find().toArray();
+            res.send(data);
+         }
       })
 
       // get a particular user using id:
-      app.get('/user/:id', async (req, res) => {
+      app.get('/users/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)};
-         const  user = await userCollection(query);
+         const query = { _id: new ObjectId(id) };
+         const user = await userCollection.findOne(query);
          res.send(user);
       })
-      
+
       // add new campaign 
       app.post('/campaigns/create', async (req, res) => {
          const newCampaign = req.body;
          const result = await campaignCollection.insertOne(newCampaign);
          res.send(result);
       })
-      
+
       // get all the avaiable campaigns:
       app.get('/campaigns', async (req, res) => {
-         const cursor = campaignCollection.find();
-         const allCampaigns = await cursor.toArray() || [];
-         res.send(allCampaigns);
+         if (req.body && req.body._id) {
+            const query = {...req.body, _id: new ObjectId(req.body._id)};
+            const data = await campaignCollection.find(query).toArray();
+            res.send(data);
+         }
+         else if (req.body) {
+            const query = req.body;
+            const data = await campaignCollection.find(query).toArray();
+            res.send(data);
+         }
+         else {
+            const data = await campaignCollection.find().toArray();
+            res.send(data);
+         }
       })
 
       // get a particular campaign data using id
       app.get('/campaigns/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)};
-         const campaign = campaignCollection.find(query);
+         const query = { _id: new ObjectId(id) };
+         const campaign = await campaignCollection.findOne(query);
          res.send(campaign);
       })
 
