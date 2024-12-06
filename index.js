@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // create express application and define the port:
 const app = express();
@@ -45,8 +45,16 @@ async function run() {
 
       // get all users:
       app.get('/users', async (req, res) => {
-         const result = await userCollection.find().toArray() || [];
-         res.send(result);
+         const users = await userCollection.find().toArray() || [];
+         res.send(users);
+      })
+
+      // get a particular user using id:
+      app.get('/user/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)};
+         const  user = await userCollection(query);
+         res.send(user);
       })
       
       // add new campaign 
