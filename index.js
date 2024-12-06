@@ -71,6 +71,14 @@ async function run() {
          res.send(allCampaigns);
       })
 
+      // get a particular campaign data using id
+      app.get('/campaigns/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)};
+         const campaign = campaignCollection.find(query);
+         res.send(campaign);
+      })
+
       // Send a ping to confirm a successful connection
       //  await client.db("admin").command({ ping: 1 });
       //  console.log("Pinged your deployment. You successfully connected to MongoDB!");
