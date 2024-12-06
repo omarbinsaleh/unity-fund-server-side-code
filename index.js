@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
+// create express application and define the port:
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -12,7 +13,6 @@ app.use(express.json());
 
 // uri for the mongoDB
 const uri = `mongodb+srv://${process.env.UNITY_FUND_DB_USERNAME}:${process.env.UNITY_FUND_DB_PASSWORD}@cluster0.fev0e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
    serverApi: {
@@ -36,17 +36,14 @@ async function run() {
          res.send("Unity Fund server is connected to mongoDB....")
       })
 
-      app.get('/hello', (req, res) => {
-         res.send("Hello world!");
-      })
-
+      // get all the avaiable campaigns:
       app.get('/campaigns', async (req, res) => {
          const cursor = campaignCollection.find();
          const allCampaigns = await cursor.toArray() || [];
          res.send(allCampaigns);
       })
 
-      // add campaign 
+      // add new campaign 
       app.post('/campaigns/add', async (req, res) => {
          const campaign = req.body;
          const result = await campaignCollection.insertOne(campaign);
