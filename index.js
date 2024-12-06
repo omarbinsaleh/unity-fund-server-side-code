@@ -118,14 +118,14 @@ async function run() {
       })
 
       // update campaign:
-      app.put('campaigns/update/:id', async(req, res) => {
+      app.put('/campaigns/update/:id', async(req, res) => {
          const data = req.body;
-         const id = req.params.id;
-         const query = {_id : new ObjectId(id)};
+         const mainId = req.params.id;
+         const query = {_id : new ObjectId(mainId)};
          const option = { upsert: true};
          const updateDoc = {
             $set : {
-               ...data, lastModified: new Date().toLocaleString()
+               ...data
             }
          };
          const result = await campaignCollection.updateOne(query, updateDoc, option);
