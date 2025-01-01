@@ -32,38 +32,32 @@ async function run() {
       const userCollection = db.collection('users'); // all existing user collection
       const donatedCollection = db.collection('donatedCollection') // all donated money collection:
 
-      // The default home route:
+      // API ENDPING: DEFAULT HOME ROUTE FOR TESTING PURPOSE
       app.get('/', (req, res) => {
          res.send("Unity Fund server is connected to mongoDB....")
       })
 
-      // add new user
+      // API ENDPOINT: ADD A NEW USER IN THE DATABASE
       app.post('/users/create', async (req, res) => {
          const newUser = req.body;
          const result = await userCollection.insertOne(newUser);
          res.send(result);
       })
 
-      // get all users:
+      // API ENDPOINT: RETRIEVE ALL THE AVAILABLE USERS IN THE DATABASE
       app.get('/users', async (req, res) => {
-         if (req.body && req.body._id) {
-            // filter users based on
-            const query = {...req.body, _id: new ObjectId(req.body._id)};
-            const data = await userCollection.find(query).toArray();
-            res.send(data);
+         const filter = {};
+
+         // filter the data based on user's id, if the id is provided in the query
+         if (req.query.id) {
+            filter._id = new ObjectId(req.query.id);
          }
-         else if (req.body) {
-            const query = req.body;
-            const data = await userCollection.find(query).toArray();
-            res.send(data);
-         }
-         else {
-            const data = await userCollection.find().toArray();
-            res.send(data);
-         }
+
+         const data = await userCollection.find(filter).toArray();
+         res.send(data);
       })
 
-      // get a particular user using id:
+      // APIN ENDPOINT: RETRIEVE A PARTICULAR USER'S DATA USING THE USER'S ID
       app.get('/users/:id', async (req, res) => {
          const id = req.params.id;
          const query = { _id: new ObjectId(id) };
@@ -71,32 +65,20 @@ async function run() {
          res.send(user);
       })
 
-      // add new campaign 
+      // API ENDPOINT: CREATE A NEW CAMPAIGN IN THE DATABASE 
       app.post('/campaigns/create', async (req, res) => {
          const newCampaign = req.body;
          const result = await campaignCollection.insertOne(newCampaign);
          res.send(result);
       })
 
-      // get all the avaiable campaigns:
+      // API ENDPOINT: RETRIEVE ALL THE AVAILABLE CAMPAIGNS IN THE DATABASE
       app.get('/campaigns', async (req, res) => {
-         if (req.body && req.body._id) {
-            const query = {...req.body, _id: new ObjectId(req.body._id)};
-            const data = await campaignCollection.find(query).toArray();
-            res.send(data);
-         }
-         else if (req.body) {
-            const query = req.body;
-            const data = await campaignCollection.find(query).toArray();
-            res.send(data);
-         }
-         else {
-            const data = await campaignCollection.find().toArray();
-            res.send(data);
-         }
+         const data = await campaignCollection.find().toArray();
+         res.send(data);
       })
 
-      // get a variable number of active campaigns:
+      // API ENDPOINT: RETRIEVE A VARIABLE NUMBER OF ACTIVE CAMPAIGNS FROM THE DATA BASE
       app.get('/campaigns/limit/:count', async (req, res) => {
          const count = parseInt(req.params.count);
          const data = await campaignCollection.find().toArray();
@@ -109,7 +91,7 @@ async function run() {
          res.send(result.slice(0, count));
       });
 
-      // get a particular campaign data using id
+      // API ENDPOINT: RETRIEVE A PARTICULAR CAMPAIGN'S INFORMATION USING THE CAMPAIGN'S ID
       app.get('/campaigns/:id', async (req, res) => {
          const id = req.params.id;
          const query = { _id: new ObjectId(id) };
@@ -117,14 +99,14 @@ async function run() {
          res.send(campaign);
       })
 
-      // update campaign:
-      app.put('/campaigns/update/:id', async(req, res) => {
+      // API ENDPOINT: UPDATE A PARTICULAR CMAPAIGN
+      app.put('/campaigns/update/:id', async (req, res) => {
          const data = req.body;
          const mainId = req.params.id;
-         const query = {_id : new ObjectId(mainId)};
-         const option = { upsert: true};
+         const query = { _id: new ObjectId(mainId) };
+         const option = { upsert: true };
          const updateDoc = {
-            $set : {
+            $set: {
                ...data
             }
          };
@@ -132,29 +114,31 @@ async function run() {
          res.send(result);
       })
 
-      // delete a campaign:
-      app.delete('/campaigns/:id', async(req, res) => {
+      // API ENDPOINT: DELETE A PARTICULAR CAMPAIGN FROM THE DATABASE
+      app.delete('/campaigns/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)};
+         const query = { _id: new ObjectId(id) };
          const result = await campaignCollection.deleteOne(query);
          res.send(result);
       })
 
-      // add donation to the database
-      app.post('/donations', async(req, res) => {
+      // API ENDPOINT: CREATE AND SAVE A DONATION DATA IN THE DATABASE
+      app.post('/donations', async (req, res) => {
          const donation = req.body;
          const result = await donatedCollection.insertOne(donation);
          res.send(result);
       })
 
-      app.get('/donations', async(req, res) => {
+      // API ENDPOINT: RETRIEVE AL THE AVAILABLE DONATION DATA FROM THE DATABASE
+      app.get('/donations', async (req, res) => {
          const data = await donatedCollection.find().toArray();
          res.send(data);
       })
 
-      app.get('donations/:id', async(req, res) => {
+      // API ENDPOINT: RETRIEVE A PARTICULAR DONATION DATA USING A DONATION ID
+      app.get('donations/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)};
+         const query = { _id: new ObjectId(id) };
          const donation = await donatedCollection.findOne(query);
          res.send(donation);
       })
